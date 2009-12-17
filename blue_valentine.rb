@@ -5,6 +5,11 @@
 #   => http://github.com/jeremymcanally/rails-templates
 #   => http://asciicasts.com/episodes/148-app-templates-in-rails-2-3
 #   => http://www.railsboost.com/
+#
+# Usage:
+#   rails testapp -m http://github.com/sofadesign/my-rails-templates/raw/master/blue_valentine.rb
+#
+
 
 # Init git repository
   git :init
@@ -60,6 +65,7 @@ plugin 'exception_notifier', :submodule => true,
   git :submodule => "init"
   
 # Install gems
+  gem 'rack', :version => '>= 1.0.1'
   gem 'haml', :version => "~> 2.0"
   gem 'maruku'
   gem "configatron", :version => "~> 2.0"
