@@ -52,6 +52,8 @@ plugin 'inherited_resources', :submodule => true,
   :git => "git://github.com/josevalim/inherited_resources.git"
 plugin 'formtastic', :submodule => true,
   :git => "git://github.com/justinfrench/formtastic.git"
+plugin 'i18n_generators', :submodule => true,
+  :git => "git://github.com/amatsuda/i18n_generators.git"
 plugin 'rails-footnotes', :submodule => true,
   :git => "git://github.com/josevalim/rails-footnotes.git"
 plugin 'rspec', :submodule => true, 
@@ -65,22 +67,26 @@ plugin 'exception_notifier', :submodule => true,
   git :submodule => "init"
   
 # Install gems
-  gem 'rack', :version => '>= 1.0.1'
-  gem 'haml', :version => "~> 2.0"
+  gem 'rack', :version => '~> 1.0.1'
+  gem 'haml', :version => '~> 2.0'
   gem 'maruku'
-  gem "configatron", :version => "~> 2.0"
+  gem "configatron", :version => '~> 2.0'
   gem 'mislav-will_paginate', :version => '~> 2.2.3', :lib => 'will_paginate', :source => 'http://gems.github.com'
   gem 'thoughtbot-factory_girl', :lib => 'factory_girl', :source => 'http://gems.github.com'
   gem 'thoughtbot-shoulda', :lib => 'shoulda', :source => 'http://gems.github.com'
-  gem 'warden'
-  gem 'devise'
+  gem 'warden', :version => '~> 0.6.5', :source => 'http://gemcutter.org/'
+  gem 'devise', :version => '~> 0.7.3', :source => 'http://gemcutter.org/'
+  gem 'gettext'
   rake 'gems:install', :sudo => true
   
 # Setup Devise
-  rake 'devise:setup'
+  generate :devise_install
 
 # Generate
-  generate :rspec  
+  generate :rspec
+  
+# Set local to FR and Generate Locale Files 
+  generate 'i18n_locale fr'
   
 # Git first add and commit
   git :add => '.'
