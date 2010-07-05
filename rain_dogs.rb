@@ -44,40 +44,41 @@ END
 # Setting bundler
 append_file '/config/preinitializer.rb', %{
 begin
-  # Require the preresolved locked set of gems.
-  require File.expand_path('../../.bundle/environment', __FILE__)
-rescue LoadError
-  # Fallback on doing the resolve at runtime.
   require "rubygems"
   require "bundler"
-  if Bundler::VERSION <= "0.9.5"
-    raise RuntimeError, "Bundler incompatible.\n" +
-      "Your bundler version is incompatible with Rails 2.3 and an unlocked bundle.\n" +
-      "Run `gem install bundler` to upgrade or `bundle lock` to lock."
-  else
-    Bundler.setup
-  end
+rescue LoadError
+  raise "Could not load the bundler gem. Install it with `gem install bundler`."
+end
+
+if Gem::Version.new(Bundler::VERSION) <= Gem::Version.new("0.9.24")
+  raise RuntimeError, "Your bundler version is too old." +
+   "Run `gem install bundler` to upgrade."
+end
+
+begin
+  # Set up load paths for all bundled gems
+  ENV["BUNDLE_GEMFILE"] = File.expand_path("../../Gemfile", __FILE__)
+  Bundler.setup
+rescue Bundler::GemNotFound
+  raise RuntimeError, "Bundler couldn't find some gems." +
+    "Did you run `bundle install`?"
 end
 }.strip
 
 gsub_file 'config/boot.rb', "Rails.boot!", %{
 
 class Rails::Boot
- def run
-   load_initializer
-   extend_environment
-   Rails::Initializer.run(:set_load_path)
- end
+  def run
+    load_initializer
 
- def extend_environment
-   Rails::Initializer.class_eval do
-     old_load = instance_method(:load_environment)
-     define_method(:load_environment) do
-       Bundler.require :default, Rails.env
-       old_load.bind(self).call
-     end
-   end
- end
+    Rails::Initializer.class_eval do
+      def load_gems
+        @bundler_loaded ||= Bundler.require :default, Rails.env
+      end
+    end
+
+    Rails::Initializer.run(:set_load_path)
+  end
 end
 
 Rails.boot!
@@ -87,19 +88,24 @@ file 'Gemfile', %{
 source 'http://rubygems.org'
 
 gem 'rails', '#{Rails::VERSION::STRING}'
-gem 'rack', :version => '~> 1.1.0'
-gem "sqlite3-ruby", :require => "sqlite3"
-gem 'haml', :version => '~> 3.0.13'
+gem 'rack', '~> 1.1.0'
+gem 'sqlite3-ruby', :require => "sqlite3"
+if RUBY_VERSION =~ /1\.9\..+/
+  gem 'linecache19'
+else
+  gem 'linecache'
+end
+gem 'haml', '~> 3.0.13'
 gem 'maruku'
-gem "configatron", :version => '~> 2.0'
-gem 'will_paginate', :version => '~> 2.3.14'
-gem 'factory_girl', :version => '~> 1.3.1'
+gem "configatron", '~> 2.0'
+gem 'will_paginate', '~> 2.3.14'
+gem 'factory_girl', '~> 1.3.1'
 gem 'warden'
-gem 'devise', :version => "~> 1.0.8", :require => "warden"
+gem 'devise', "~> 1.0.8", :require => "warden"
 gem 'asset_packager'
-gem 'paperclip', :version => "~> 2.3.3"
-gem 'jrails', :version => "~> 0.6.0"
-gem 'acts_as_list', :version => "1.0.8"
+gem 'paperclip', "~> 2.3.3"
+gem 'jrails', "~> 0.6.0"
+gem 'acts_as_list', "0.1.2"
 gem 'exception_notification'
 
 group :development do
