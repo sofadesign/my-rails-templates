@@ -129,8 +129,16 @@ run 'bundle install'
 # Setup Devise
   generate :devise_install
 
-# Generate
-  generate :rspec
+# Prepare Rspec
+generate :rspec
+gsub_file 'spec/spec_helper.rb', "require 'spec/rails'", %{
+  require 'spec/rails'
+  require 'factory_girl'
+}
+inside('spec') do
+  run "mkdir factories"
+end
+
   
 # Set local to EN and Generate Locale Files 
   generate 'i18n_locale en'
