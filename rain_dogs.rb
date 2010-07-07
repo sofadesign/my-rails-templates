@@ -117,7 +117,8 @@ end
 
 group :test do
   # bundler requires these gems while running tests
-  gem 'rspec-rails', :require => 'rspec'
+  gem 'rspec'
+  gem 'rspec-rails'
   gem 'faker'
   gem 'mocha'
   gem 'shoulda'
