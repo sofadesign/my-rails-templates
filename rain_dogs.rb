@@ -25,6 +25,7 @@ tmp/**/*
 config/database.yml
 db/*.sqlite3
 .bundle
+.rvmrc
 END
 
 # Copy database.yml for distribution use
@@ -84,17 +85,18 @@ end
 Rails.boot!
 }
 
+
+# If you use RVM with ruby 1.9.x, you might need to install ruby-debug19 
+# (which depend on linecache19) manually before.
+# http://isitruby19.com/linecache
+# gem install ruby-debug19 -- --with-ruby-include=/home/user/.rvm/src/ruby-1.9.1-p378mate
+
 file 'Gemfile', %{
 source 'http://rubygems.org'
 
 gem 'rails', '#{Rails::VERSION::STRING}'
 gem 'rack', '~> 1.1.0'
 gem 'sqlite3-ruby', :require => "sqlite3"
-if RUBY_VERSION =~ /1\.9\..+/
-  gem 'linecache19'
-else
-  gem 'linecache'
-end
 gem 'haml', '~> 3.0.13'
 gem 'maruku'
 gem "configatron", '~> 2.0'
@@ -109,7 +111,7 @@ gem 'acts_as_list', "0.1.2"
 gem 'exception_notification'
 
 group :development do
-  gem 'ruby-debug'
+  gem "ruby-debug#{'19' if ENV['RUBY_VERSION'] =~ /ruby-1\.9\..+/}"
   gem 'rails-footnotes'
 end
 
