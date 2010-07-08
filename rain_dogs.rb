@@ -97,6 +97,9 @@ source 'http://rubygems.org'
 gem 'rails', '#{Rails::VERSION::STRING}'
 gem 'rack', '~> 1.1.0'
 gem 'sqlite3-ruby', :require => "sqlite3"
+gem 'abstract'
+gem 'erubis', '~> 2.6.5', :require => "abstract"
+gem 'rails_xss', :require => "erubis"
 gem 'haml', '~> 3.0.13'
 gem 'maruku'
 gem "configatron", '~> 2.0'
